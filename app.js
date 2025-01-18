@@ -72,8 +72,8 @@ function processLocationHistory(data) {
         // その日がまだ記録されていない場合のみチェック
         const dateStr = startTime.toLocaleDateString('ja-JP');
         
-        // タイムラインの各ポイントをチェック
-        const isNearCampus = timeline.timelinePath.some(point => {
+        // タイムラインの各ポイントをチェック（timelinePathが存在する場合のみ）
+        const isNearCampus = timeline.timelinePath && timeline.timelinePath.some(point => {
             const [lat, lng] = point.point.replace('geo:', '').split(',').map(Number);
             return Math.abs(lat - AOYAMA_LAT) < THRESHOLD && 
                    Math.abs(lng - AOYAMA_LNG) < THRESHOLD;
