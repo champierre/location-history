@@ -1,6 +1,6 @@
 // ローカルストレージから座標を読み込む
-const latInput = document.getElementById('latitude');
-const lngInput = document.getElementById('longitude');
+const latInput = document.getElementById('lat');
+const lngInput = document.getElementById('lng');
 
 // 保存された座標があれば入力欄に設定
 const savedLocation = JSON.parse(localStorage.getItem('location') || '{}');

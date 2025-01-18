@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>位置情報訪問履歴</title>
+    <title>訪問日表示ツール</title>
     <style>
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -29,6 +29,12 @@
             background-color: #f8f9fa;
             border-radius: 8px;
         }
+        .coordinate-input h2 {
+            color: #003f87;
+            font-size: 1.2em;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
         .coordinate-input label {
             margin-right: 10px;
         }
@@ -47,11 +53,28 @@
             cursor: pointer;
         }
         .upload-section {
-            text-align: center;
             margin-bottom: 30px;
+        }
+        .upload-area {
+            display: block;
+            text-align: center;
             padding: 20px;
             border: 2px dashed #ccc;
             border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .upload-area:hover {
+            background-color: #f0f0f0;
+        }
+        .upload-text {
+            color: #003f87;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        #uploadStatus {
+            margin: 0;
+            color: #666;
         }
         .month-section {
             margin-bottom: 20px;
@@ -93,20 +116,21 @@
 </head>
 <body>
     <div class="container">
-        <h1>位置情報訪問履歴</h1>
+        <h1>訪問日表示ツール</h1>
         <div class="coordinate-input">
-            <label for="latitude">緯度:</label>
-            <input type="text" id="latitude" placeholder="35.6581">
-            <label for="longitude">経度:</label>
-            <input type="text" id="longitude" placeholder="139.7017">
-            <div id="maps-link"></div>
+            <h2>訪問履歴を表示したい場所の座標</h2>
+            <label for="lat">緯度:</label>
+            <input type="text" id="lat" placeholder="35.6581">
+            <label for="lng">経度:</label>
+            <input type="text" id="lng" placeholder="139.7017">
+            <div id="maps-link" style="margin-top: 15px;"></div>
         </div>
         <div class="upload-section">
             <input type="file" id="fileInput" accept=".json" style="display: none;">
-            <label for="fileInput" class="upload-button">
-                <span>JSONファイルを選択</span>
+            <label for="fileInput" class="upload-area">
+                <div class="upload-text">JSONファイルを選択</div>
+                <p id="uploadStatus">またはファイルをここにドラッグ＆ドロップ</p>
             </label>
-            <p id="uploadStatus">またはファイルをここにドラッグ＆ドロップ</p>
         </div>
         <div id="result"></div>
     </div>
