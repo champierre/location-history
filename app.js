@@ -1,15 +1,28 @@
-// ローカルストレージから座標を読み込む
+// ローカルストレージから座標と許容範囲を読み込む
 const latInput = document.getElementById('lat');
 const lngInput = document.getElementById('lng');
+const thresholdInput = document.getElementById('threshold');
 
-// 保存された座標があれば入力欄に設定
+// 保存された値があれば入力欄に設定
 const savedLocation = JSON.parse(localStorage.getItem('location') || '{}');
 if (savedLocation.lat && savedLocation.lng) {
     latInput.value = savedLocation.lat;
     lngInput.value = savedLocation.lng;
 }
 
-// 座標入力時の自動保存とマップリンクの更新
+// 保存された許容範囲があれば設定
+const savedThreshold = localStorage.getItem('threshold');
+if (savedThreshold) {
+    thresholdInput.value = savedThreshold;
+}
+
+// メートル単位の距離を緯度経度の差分に変換する関数
+function metersToCoordDiff(meters) {
+    // 緯度1度は約111km、経度1度は約91km（日本付近）として計算
+    return meters / 91000; // より大きい値（経度）を使用して安全側に
+}
+
+// 入力値の自動保存とマップリンクの更新
 function updateLocation() {
     const lat = parseFloat(latInput.value);
     const lng = parseFloat(lngInput.value);
@@ -33,6 +46,10 @@ function updateLocation() {
 
 latInput.addEventListener('input', updateLocation);
 lngInput.addEventListener('input', updateLocation);
+thresholdInput.addEventListener('input', () => {
+    // 許容範囲の値をローカルストレージに保存
+    localStorage.setItem('threshold', thresholdInput.value);
+});
 
 // 初期表示時にもマップリンクを更新
 updateLocation();
@@ -119,8 +136,8 @@ function processLocationHistory(data) {
         return;
     }
     
-    // 許容範囲（約200メートル）
-    const THRESHOLD = 0.002;
+    // 許容範囲をメートルから緯度経度の差分に変換
+    const THRESHOLD = metersToCoordDiff(parseFloat(thresholdInput.value));
 
     // 訪問日を格納するオブジェクト（月ごと）
     const visitDates = {};
