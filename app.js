@@ -1,3 +1,32 @@
+// ローカルストレージから座標を読み込む
+const latitudeInput = document.getElementById('latitude');
+const longitudeInput = document.getElementById('longitude');
+const saveButton = document.getElementById('saveLocation');
+
+// 保存された座標があれば入力欄に設定
+const savedLocation = JSON.parse(localStorage.getItem('location') || '{}');
+if (savedLocation.latitude && savedLocation.longitude) {
+    latitudeInput.value = savedLocation.latitude;
+    longitudeInput.value = savedLocation.longitude;
+}
+
+// 保存ボタンのクリックイベント
+saveButton.addEventListener('click', () => {
+    const latitude = parseFloat(latitudeInput.value);
+    const longitude = parseFloat(longitudeInput.value);
+    
+    if (isNaN(latitude) || isNaN(longitude)) {
+        alert('有効な緯度と経度を入力してください');
+        return;
+    }
+    
+    localStorage.setItem('location', JSON.stringify({
+        latitude,
+        longitude
+    }));
+    alert('位置情報を保存しました');
+});
+
 // ファイルアップロードの処理
 const fileInput = document.getElementById('fileInput');
 const uploadStatus = document.getElementById('uploadStatus');
@@ -56,9 +85,16 @@ uploadSection.addEventListener('drop', (e) => {
 });
 
 function processLocationHistory(data) {
-    // 青山キャンパスの座標（中心点）
-    const AOYAMA_LAT = 35.6615;
-    const AOYAMA_LNG = 139.7087;
+    // ユーザー入力の座標を取得
+    const savedLocation = JSON.parse(localStorage.getItem('location') || '{}');
+    const targetLat = parseFloat(savedLocation.latitude);
+    const targetLng = parseFloat(savedLocation.longitude);
+    
+    if (isNaN(targetLat) || isNaN(targetLng)) {
+        uploadStatus.textContent = '有効な緯度と経度を設定してください';
+        return;
+    }
+    
     // 許容範囲（約200メートル）
     const THRESHOLD = 0.002;
 
@@ -75,11 +111,11 @@ function processLocationHistory(data) {
         // タイムラインの各ポイントをチェック（timelinePathが存在する場合のみ）
         const isNearCampus = timeline.timelinePath && timeline.timelinePath.some(point => {
             const [lat, lng] = point.point.replace('geo:', '').split(',').map(Number);
-            return Math.abs(lat - AOYAMA_LAT) < THRESHOLD && 
-                   Math.abs(lng - AOYAMA_LNG) < THRESHOLD;
+            return Math.abs(lat - targetLat) < THRESHOLD && 
+                   Math.abs(lng - targetLng) < THRESHOLD;
         });
 
-        if (isNearCampus) {
+        if (isNearCampus && targetLat && targetLng) {
             if (!visitDates[month]) {
                 visitDates[month] = new Set();
             }
@@ -103,7 +139,7 @@ function displayResults(visitDates) {
     });
 
     if (months.length === 0) {
-        resultDiv.innerHTML = '<p>指定された期間内に青山キャンパスへの訪問記録はありませんでした。</p>';
+        resultDiv.innerHTML = '<p>指定された期間内に指定位置への訪問記録はありませんでした。</p>';
         return;
     }
 
