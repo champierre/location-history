@@ -82,7 +82,12 @@ function displayResults(visitDates) {
 
         sortedDates.forEach(date => {
             const listItem = document.createElement('li');
-            listItem.textContent = date;
+            // 日付文字列からDateオブジェクトを作成
+            const dateObj = new Date(date.replace(/年|月|日/g, '/'));
+            // 曜日を取得
+            const dayOfWeek = dateObj.toLocaleDateString('ja-JP', { weekday: 'short' });
+            // 元の日付に曜日を追加
+            listItem.textContent = `${date}（${dayOfWeek}）`;
             dateList.appendChild(listItem);
         });
 
