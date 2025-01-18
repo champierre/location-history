@@ -25,13 +25,7 @@ function updateLocation() {
         // Google Mapsリンクを更新
         const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
         mapsLinkElement.innerHTML = 
-        `<a href="${mapsUrl}" target="_blank">Google Mapsで表示 📍</a>`;
-        
-        // `<a href="${mapsUrl}" target="_blank" style="color: #003f87; text-decoration: none;">
-            // <button style="padding: 5px 15px; background-color: #003f87; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                // Google Mapsで表示
-            // </button>
-        // </a>`;
+        `<a href="${mapsUrl}" target="_blank">Google Mapsで表示 📍</a>`;        
     } else {
         mapsLinkElement.innerHTML = '';
     }
