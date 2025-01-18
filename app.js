@@ -9,21 +9,39 @@ if (savedLocation.lat && savedLocation.lng) {
     lngInput.value = savedLocation.lng;
 }
 
-// 座標入力時の自動保存
-function saveLocation() {
+// 座標入力時の自動保存とマップリンクの更新
+function updateLocation() {
     const lat = parseFloat(latInput.value);
     const lng = parseFloat(lngInput.value);
+    const mapsLinkElement = document.getElementById('maps-link');
     
     if (!isNaN(lat) && !isNaN(lng)) {
+        // ローカルストレージに保存
         localStorage.setItem('location', JSON.stringify({
             lat,
             lng
         }));
+        
+        // Google Mapsリンクを更新
+        const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+        mapsLinkElement.innerHTML = 
+        `<a href="${mapsUrl}" target="_blank">Google Mapsで表示 📍</a>`;
+        
+        // `<a href="${mapsUrl}" target="_blank" style="color: #003f87; text-decoration: none;">
+            // <button style="padding: 5px 15px; background-color: #003f87; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                // Google Mapsで表示
+            // </button>
+        // </a>`;
+    } else {
+        mapsLinkElement.innerHTML = '';
     }
 }
 
-latInput.addEventListener('input', saveLocation);
-lngInput.addEventListener('input', saveLocation);
+latInput.addEventListener('input', updateLocation);
+lngInput.addEventListener('input', updateLocation);
+
+// 初期表示時にもマップリンクを更新
+updateLocation();
 
 // ファイルアップロードの処理
 const fileInput = document.getElementById('fileInput');
