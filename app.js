@@ -19,7 +19,19 @@ function saveLocation() {
             lat,
             lng
         }));
+        updateMapsLink(lat, lng);
     }
+}
+
+function updateMapsLink(lat, lng) {
+    const mapsLink = document.getElementById('maps-link');
+    const url = `https://www.google.com/maps?q=${lat},${lng}`;
+    mapsLink.innerHTML = `<a href="${url}" target="_blank">Google Mapsで表示 📍</a>`;
+}
+
+// 初期表示時にもGoogle Mapsリンクを更新
+if (savedLocation.lat && savedLocation.lng) {
+    updateMapsLink(savedLocation.lat, savedLocation.lng);
 }
 
 latInput.addEventListener('input', saveLocation);
