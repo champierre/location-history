@@ -1,13 +1,47 @@
-document.getElementById('fileInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const data = JSON.parse(e.target.result);
-            processLocationHistory(data);
-        };
-        reader.readAsText(file);
+// サンプルデータを直接埋め込み
+const sampleData = [
+  {
+    "endTime" : "2014-10-17T09:27:40.285+09:00",
+    "startTime" : "2014-10-17T09:07:02.473+09:00",
+    "activity" : {
+      "end" : "geo:35.662978,139.745069",
+      "topCandidate" : {
+        "type" : "in subway",
+        "probability" : "0.000000"
+      },
+      "distanceMeters" : "4820.874023",
+      "start" : "geo:35.691348,139.704710"
     }
+  },
+  {
+    "endTime" : "2014-10-17T11:44:51.053+09:00",
+    "startTime" : "2014-10-17T09:27:40.285+09:00",
+    "visit" : {
+      "hierarchyLevel" : "0",
+      "topCandidate" : {
+        "probability" : "0.983039",
+        "semanticType" : "Work",
+        "placeID" : "ChIJn7Ze2ZaLGGAR_KuObJMuT6s",
+        "placeLocation" : "geo:35.662978,139.745069"
+      },
+      "probability" : "0.640000"
+    }
+  },
+  {
+    "endTime" : "2025-01-14T06:00:00.000Z",
+    "startTime" : "2025-01-14T04:00:00.000Z",
+    "timelinePath" : [
+      {
+        "point" : "geo:35.660638,139.711885",
+        "durationMinutesOffsetFromStartTime" : "55"
+      }
+    ]
+  }
+];
+
+// ページ読み込み時に結果を表示
+window.addEventListener('load', () => {
+    processLocationHistory(sampleData);
 });
 
 function processLocationHistory(data) {
