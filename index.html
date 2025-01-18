@@ -61,7 +61,11 @@
     <div class="container">
         <h1>青山キャンパス訪問履歴</h1>
         <div class="upload-section">
-            <p>サンプルデータを表示中</p>
+            <input type="file" id="fileInput" accept=".json" style="display: none;">
+            <label for="fileInput" class="upload-button">
+                <span>JSONファイルを選択</span>
+            </label>
+            <p id="uploadStatus">またはファイルをここにドラッグ＆ドロップ</p>
         </div>
         <div id="result"></div>
     </div>

@@ -1,47 +1,58 @@
-// サンプルデータを直接埋め込み
-const sampleData = [
-  {
-    "endTime" : "2014-10-17T09:27:40.285+09:00",
-    "startTime" : "2014-10-17T09:07:02.473+09:00",
-    "activity" : {
-      "end" : "geo:35.662978,139.745069",
-      "topCandidate" : {
-        "type" : "in subway",
-        "probability" : "0.000000"
-      },
-      "distanceMeters" : "4820.874023",
-      "start" : "geo:35.691348,139.704710"
-    }
-  },
-  {
-    "endTime" : "2014-10-17T11:44:51.053+09:00",
-    "startTime" : "2014-10-17T09:27:40.285+09:00",
-    "visit" : {
-      "hierarchyLevel" : "0",
-      "topCandidate" : {
-        "probability" : "0.983039",
-        "semanticType" : "Work",
-        "placeID" : "ChIJn7Ze2ZaLGGAR_KuObJMuT6s",
-        "placeLocation" : "geo:35.662978,139.745069"
-      },
-      "probability" : "0.640000"
-    }
-  },
-  {
-    "endTime" : "2025-01-14T06:00:00.000Z",
-    "startTime" : "2025-01-14T04:00:00.000Z",
-    "timelinePath" : [
-      {
-        "point" : "geo:35.660638,139.711885",
-        "durationMinutesOffsetFromStartTime" : "55"
-      }
-    ]
-  }
-];
+// ファイルアップロードの処理
+const fileInput = document.getElementById('fileInput');
+const uploadStatus = document.getElementById('uploadStatus');
 
-// ページ読み込み時に結果を表示
-window.addEventListener('load', () => {
-    processLocationHistory(sampleData);
+// ファイル選択時の処理
+fileInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file && file.type === 'application/json') {
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            try {
+                const jsonData = JSON.parse(e.target.result);
+                uploadStatus.textContent = `${file.name} を読み込み中...`;
+                processLocationHistory(jsonData);
+                uploadStatus.textContent = `${file.name} の処理が完了しました`;
+            } catch (error) {
+                uploadStatus.textContent = 'ファイルの読み込みに失敗しました';
+                console.error('JSONパースエラー:', error);
+            }
+        };
+        
+        reader.onerror = () => {
+            uploadStatus.textContent = 'ファイルの読み込みに失敗しました';
+        };
+        
+        reader.readAsText(file);
+    } else {
+        uploadStatus.textContent = '無効なファイル形式です。JSONファイルを選択してください';
+    }
+});
+
+// ドラッグ＆ドロップの処理
+const uploadSection = document.querySelector('.upload-section');
+
+uploadSection.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadSection.style.backgroundColor = '#f0f0f0';
+});
+
+uploadSection.addEventListener('dragleave', () => {
+    uploadSection.style.backgroundColor = 'transparent';
+});
+
+uploadSection.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadSection.style.backgroundColor = 'transparent';
+    
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/json') {
+        fileInput.files = e.dataTransfer.files;
+        fileInput.dispatchEvent(new Event('change'));
+    } else {
+        uploadStatus.textContent = '無効なファイル形式です。JSONファイルをドロップしてください';
+    }
 });
 
 function processLocationHistory(data) {
