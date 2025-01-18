@@ -3,6 +3,9 @@ const latInput = document.getElementById('lat');
 const lngInput = document.getElementById('lng');
 const thresholdInput = document.getElementById('threshold');
 
+// 最後に読み込んだJSONデータを保持する変数
+let lastLoadedData = null;
+
 // 保存された値があれば入力欄に設定
 const savedLocation = JSON.parse(localStorage.getItem('location') || '{}');
 if (savedLocation.lat && savedLocation.lng) {
@@ -44,11 +47,22 @@ function updateLocation() {
     }
 }
 
-latInput.addEventListener('input', updateLocation);
-lngInput.addEventListener('input', updateLocation);
+// 入力値が変更された時の共通処理
+function handleInputChange() {
+    updateLocation();
+    if (lastLoadedData) {
+        processLocationHistory(lastLoadedData);
+    }
+}
+
+latInput.addEventListener('input', handleInputChange);
+lngInput.addEventListener('input', handleInputChange);
 thresholdInput.addEventListener('input', () => {
     // 許容範囲の値をローカルストレージに保存
     localStorage.setItem('threshold', thresholdInput.value);
+    if (lastLoadedData) {
+        processLocationHistory(lastLoadedData);
+    }
 });
 
 // 初期表示時にもマップリンクを更新
@@ -78,6 +92,7 @@ function handleFile(file) {
                 const jsonData = JSON.parse(e.target.result);
                 uploadStatus.textContent = `${file.name} を読み込み中...`;
                 uploadStatus.style.color = 'initial';
+                lastLoadedData = jsonData;
                 processLocationHistory(jsonData);
                 uploadStatus.textContent = `${file.name} の処理が完了しました`;
             } catch (error) {
