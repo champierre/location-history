@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>位置情報訪問履歴</title>
+    <title>訪問日表示ツール</title>
     <style>
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -28,6 +28,12 @@
             padding: 15px;
             background-color: #f8f9fa;
             border-radius: 8px;
+        }
+        .coordinate-input h2 {
+            color: #003f87;
+            font-size: 1.2em;
+            margin-top: 0;
+            margin-bottom: 15px;
         }
         .coordinate-input label {
             margin-right: 10px;
@@ -82,8 +88,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>位置情報訪問履歴</h1>
+        <h1>訪問日表示ツール</h1>
         <div class="coordinate-input">
+            <h2>訪問履歴を表示したい場所の座標</h2>
             <label for="lat">緯度:</label>
             <input type="text" id="lat" placeholder="35.6581">
             <label for="lng">経度:</label>

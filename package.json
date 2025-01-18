@@ -1,7 +1,7 @@
 {
-  "name": "location-history",
+  "name": "visit-date-viewer",
   "version": "1.0.0",
-  "description": "Location history visualization",
+  "description": "訪問日表示ツール - 特定の場所への訪問履歴を表示",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
