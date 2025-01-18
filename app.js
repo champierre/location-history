@@ -1,29 +1,29 @@
 // ローカルストレージから座標を読み込む
-const latitudeInput = document.getElementById('latitude');
-const longitudeInput = document.getElementById('longitude');
+const latInput = document.getElementById('lat');
+const lngInput = document.getElementById('lng');
 
 // 保存された座標があれば入力欄に設定
 const savedLocation = JSON.parse(localStorage.getItem('location') || '{}');
-if (savedLocation.latitude && savedLocation.longitude) {
-    latitudeInput.value = savedLocation.latitude;
-    longitudeInput.value = savedLocation.longitude;
+if (savedLocation.lat && savedLocation.lng) {
+    latInput.value = savedLocation.lat;
+    lngInput.value = savedLocation.lng;
 }
 
 // 座標入力時の自動保存
 function saveLocation() {
-    const latitude = parseFloat(latitudeInput.value);
-    const longitude = parseFloat(longitudeInput.value);
+    const lat = parseFloat(latInput.value);
+    const lng = parseFloat(lngInput.value);
     
-    if (!isNaN(latitude) && !isNaN(longitude)) {
+    if (!isNaN(lat) && !isNaN(lng)) {
         localStorage.setItem('location', JSON.stringify({
-            latitude,
-            longitude
+            lat,
+            lng
         }));
     }
 }
 
-latitudeInput.addEventListener('input', saveLocation);
-longitudeInput.addEventListener('input', saveLocation);
+latInput.addEventListener('input', saveLocation);
+lngInput.addEventListener('input', saveLocation);
 
 // ファイルアップロードの処理
 const fileInput = document.getElementById('fileInput');
@@ -32,10 +32,10 @@ const uploadStatus = document.getElementById('uploadStatus');
 // 共通のファイル処理関数
 function handleFile(file) {
     // 緯度経度のバリデーション
-    const latitude = parseFloat(latitudeInput.value);
-    const longitude = parseFloat(longitudeInput.value);
+    const lat = parseFloat(latInput.value);
+    const lng = parseFloat(lngInput.value);
     
-    if (isNaN(latitude) || isNaN(longitude)) {
+    if (isNaN(lat) || isNaN(lng)) {
         uploadStatus.textContent = '⚠️ エラー: 有効な緯度と経度を入力してください';
         uploadStatus.style.color = 'red';
         return;
@@ -98,10 +98,10 @@ uploadSection.addEventListener('drop', (e) => {
 
 function processLocationHistory(data) {
     // ユーザー入力の座標を取得
-    const latitude = parseFloat(latitudeInput.value);
-    const longitude = parseFloat(longitudeInput.value);
+    const lat = parseFloat(latInput.value);
+    const lng = parseFloat(lngInput.value);
     
-    if (isNaN(latitude) || isNaN(longitude)) {
+    if (isNaN(lat) || isNaN(lng)) {
         uploadStatus.textContent = '⚠️ エラー: 有効な緯度と経度を入力してください';
         uploadStatus.style.color = 'red';
         return;
@@ -121,13 +121,13 @@ function processLocationHistory(data) {
         const dateStr = startTime.toLocaleDateString('ja-JP');
         
         // タイムラインの各ポイントをチェック（timelinePathが存在する場合のみ）
-        const isNearCampus = timeline.timelinePath && timeline.timelinePath.some(point => {
-            const [lat, lng] = point.point.replace('geo:', '').split(',').map(Number);
-            return Math.abs(lat - latitude) < THRESHOLD && 
-                   Math.abs(lng - longitude) < THRESHOLD;
+        const isNear = timeline.timelinePath && timeline.timelinePath.some(point => {
+            const [pointLat, pointLng] = point.point.replace('geo:', '').split(',').map(Number);
+            return Math.abs(pointLat - lat) < THRESHOLD && 
+                   Math.abs(pointLng - lng) < THRESHOLD;
         });
 
-        if (isNearCampus) {
+        if (isNear) {
             if (!visitDates[month]) {
                 visitDates[month] = new Set();
             }
