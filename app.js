@@ -1,16 +1,40 @@
 // ローカルストレージから座標と許容範囲を読み込む
-const latInput = document.getElementById('lat');
-const lngInput = document.getElementById('lng');
+const coordinatesInput = document.getElementById('coordinates');
 const thresholdInput = document.getElementById('threshold');
 
 // 最後に読み込んだJSONデータを保持する変数
 let lastLoadedData = null;
 
+// 座標文字列をパースする関数
+function parseCoordinates(input) {
+    // 入力文字列から不要な空白を削除
+    const cleanInput = input.trim();
+    
+    // (緯度, 経度) 形式のパース
+    const parenthesesMatch = cleanInput.match(/^\(([\d.-]+),\s*([\d.-]+)\)$/);
+    if (parenthesesMatch) {
+        return {
+            lat: parseFloat(parenthesesMatch[1]),
+            lng: parseFloat(parenthesesMatch[2])
+        };
+    }
+    
+    // 緯度,経度 形式のパース
+    const simpleMatch = cleanInput.match(/^([\d.-]+),\s*([\d.-]+)$/);
+    if (simpleMatch) {
+        return {
+            lat: parseFloat(simpleMatch[1]),
+            lng: parseFloat(simpleMatch[2])
+        };
+    }
+    
+    return null;
+}
+
 // 保存された値があれば入力欄に設定
 const savedLocation = JSON.parse(localStorage.getItem('location') || '{}');
 if (savedLocation.lat && savedLocation.lng) {
-    latInput.value = savedLocation.lat;
-    lngInput.value = savedLocation.lng;
+    coordinatesInput.value = `(${savedLocation.lat}, ${savedLocation.lng})`;
 }
 
 // 保存された許容範囲があれば設定
@@ -27,19 +51,15 @@ function metersToCoordDiff(meters) {
 
 // 入力値の自動保存とマップリンクの更新
 function updateLocation() {
-    const lat = parseFloat(latInput.value);
-    const lng = parseFloat(lngInput.value);
+    const coordinates = parseCoordinates(coordinatesInput.value);
     const mapsLinkElement = document.getElementById('maps-link');
     
-    if (!isNaN(lat) && !isNaN(lng)) {
+    if (coordinates) {
         // ローカルストレージに保存
-        localStorage.setItem('location', JSON.stringify({
-            lat,
-            lng
-        }));
+        localStorage.setItem('location', JSON.stringify(coordinates));
         
         // Google Mapsリンクを更新
-        const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+        const mapsUrl = `https://www.google.com/maps?q=${coordinates.lat},${coordinates.lng}`;
         mapsLinkElement.innerHTML = 
         `<a href="${mapsUrl}" target="_blank">Google Mapsで表示 📍</a>`;        
     } else {
@@ -55,8 +75,7 @@ function handleInputChange() {
     }
 }
 
-latInput.addEventListener('input', handleInputChange);
-lngInput.addEventListener('input', handleInputChange);
+coordinatesInput.addEventListener('input', handleInputChange);
 thresholdInput.addEventListener('input', () => {
     // 許容範囲の値をローカルストレージに保存
     localStorage.setItem('threshold', thresholdInput.value);
@@ -74,12 +93,11 @@ const uploadStatus = document.getElementById('uploadStatus');
 
 // 共通のファイル処理関数
 function handleFile(file) {
-    // 緯度経度のバリデーション
-    const lat = parseFloat(latInput.value);
-    const lng = parseFloat(lngInput.value);
+    // 座標のバリデーション
+    const coordinates = parseCoordinates(coordinatesInput.value);
     
-    if (isNaN(lat) || isNaN(lng)) {
-        uploadStatus.textContent = '⚠️ エラー: 有効な緯度と経度を入力してください';
+    if (!coordinates) {
+        uploadStatus.textContent = '⚠️ エラー: 有効な座標を入力してください';
         uploadStatus.style.color = 'red';
         return;
     }
@@ -142,11 +160,10 @@ uploadSection.addEventListener('drop', (e) => {
 
 function processLocationHistory(data) {
     // ユーザー入力の座標を取得
-    const lat = parseFloat(latInput.value);
-    const lng = parseFloat(lngInput.value);
+    const coordinates = parseCoordinates(coordinatesInput.value);
     
-    if (isNaN(lat) || isNaN(lng)) {
-        uploadStatus.textContent = '⚠️ エラー: 有効な緯度と経度を入力してください';
+    if (!coordinates) {
+        uploadStatus.textContent = '⚠️ エラー: 有効な座標を入力してください';
         uploadStatus.style.color = 'red';
         return;
     }
@@ -167,8 +184,8 @@ function processLocationHistory(data) {
         // タイムラインの各ポイントをチェック（timelinePathが存在する場合のみ）
         const isNear = timeline.timelinePath && timeline.timelinePath.some(point => {
             const [pointLat, pointLng] = point.point.replace('geo:', '').split(',').map(Number);
-            return Math.abs(pointLat - lat) < THRESHOLD && 
-                   Math.abs(pointLng - lng) < THRESHOLD;
+            return Math.abs(pointLat - coordinates.lat) < THRESHOLD && 
+                   Math.abs(pointLng - coordinates.lng) < THRESHOLD;
         });
 
         if (isNear) {
